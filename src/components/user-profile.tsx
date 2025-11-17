@@ -11,9 +11,10 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from './ui/dropdown-menu'
-import { User, LogOut, Coins, Crown, Star } from 'lucide-react'
+import { User, LogOut, Coins, Crown, Star, ShoppingCart } from 'lucide-react'
 import { useEffect, useState } from 'react'
 import { Query } from 'appwrite'
+import { PurchaseCreditsModal } from './purchase-credits-modal'
 
 type ProfileData = {
   credits: number
@@ -24,6 +25,7 @@ export function UserProfile() {
   const { user, signOut } = useAuth()
   const [profile, setProfile] = useState<ProfileData | null>(null)
   const [loading, setLoading] = useState(true)
+  const [isPurchaseModalOpen, setIsPurchaseModalOpen] = useState(false)
 
   useEffect(() => {
     async function loadProfile() {
@@ -94,9 +96,28 @@ export function UserProfile() {
   }
 
   return (
-    <div className="flex items-center gap-3">
-      {/* Credits Display Box */}
-      <div className="flex items-center gap-2 rounded-lg border border-amber-500/50 bg-amber-900/20 px-4 py-2">
+    <>
+      <PurchaseCreditsModal
+        isOpen={isPurchaseModalOpen}
+        onClose={() => {
+          setIsPurchaseModalOpen(false)
+          refreshCredits() // Refresh credits when modal closes
+        }}
+        userId={user?.$id || ''}
+      />
+      
+      <div className="flex items-center gap-3">
+        {/* Buy Credits Button */}
+        <Button
+          onClick={() => setIsPurchaseModalOpen(true)}
+          className="bg-gradient-to-r from-amber-600 to-orange-600 hover:from-amber-700 hover:to-orange-700 text-white font-semibold"
+        >
+          <ShoppingCart className="w-4 h-4 mr-2" />
+          Buy Credits
+        </Button>
+        
+        {/* Credits Display Box */}
+        <div className="flex items-center gap-2 rounded-lg border border-amber-500/50 bg-amber-900/20 px-4 py-2">
         <Coins className="w-5 h-5 text-amber-400" />
         <div className="flex flex-col">
           <span className="text-xs text-amber-300/70">Credits</span>
@@ -141,6 +162,7 @@ export function UserProfile() {
           </DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>
-    </div>
+      </div>
+    </>
   )
 }

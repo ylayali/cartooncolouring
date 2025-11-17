@@ -1,16 +1,34 @@
 import { NextRequest, NextResponse } from 'next/server';
 import Stripe from 'stripe';
 import { getDatabases } from '@/lib/appwrite-server';
+import { getPackageById } from '@/lib/credit-packages';
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!);
 
 export async function POST(request: NextRequest) {
   try {
-    const { userId } = await request.json();
+    const { userId, packageId } = await request.json();
 
     if (!userId) {
       return NextResponse.json(
         { error: 'User ID is required' },
+        { status: 400 }
+      );
+    }
+
+    if (!packageId) {
+      return NextResponse.json(
+        { error: 'Package ID is required' },
+        { status: 400 }
+      );
+    }
+
+    // Get the selected package
+    const selectedPackage = getPackageById(packageId);
+    
+    if (!selectedPackage) {
+      return NextResponse.json(
+        { error: 'Invalid package selected' },
         { status: 400 }
       );
     }
@@ -38,10 +56,10 @@ export async function POST(request: NextRequest) {
           price_data: {
             currency: 'usd',
             product_data: {
-              name: '10 Coloring Page Credits',
-              description: 'Generate 10 custom coloring pages',
+              name: `${selectedPackage.name} - ${selectedPackage.credits} Credits`,
+              description: selectedPackage.description,
             },
-            unit_amount: 900, // $9.00 in cents
+            unit_amount: selectedPackage.price,
           },
           quantity: 1,
         },
@@ -52,7 +70,9 @@ export async function POST(request: NextRequest) {
       customer_email: profile.email,
       metadata: {
         userId: userId,
-        credits: '10',
+        credits: selectedPackage.credits.toString(),
+        packageId: selectedPackage.id,
+        packageName: selectedPackage.name,
       },
     });
 
