@@ -1,13 +1,13 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { Suspense, useEffect, useState } from 'react'
 import { useSearchParams, useRouter } from 'next/navigation'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { CheckCircle, Coins, Home } from 'lucide-react'
 import { useAuth } from '@/components/auth-context'
 
-export default function PurchaseSuccessPage() {
+function PurchaseSuccessContent() {
   const searchParams = useSearchParams()
   const router = useRouter()
   const { user } = useAuth()
@@ -84,5 +84,22 @@ export default function PurchaseSuccessPage() {
         </CardContent>
       </Card>
     </div>
+  )
+}
+
+export default function PurchaseSuccessPage() {
+  return (
+    <Suspense fallback={
+      <div className="min-h-screen bg-black flex items-center justify-center p-4">
+        <Card className="max-w-md w-full bg-black/50 border-white/20">
+          <CardContent className="pt-6 text-center">
+            <div className="animate-pulse h-4 bg-white/20 rounded w-3/4 mx-auto"></div>
+            <p className="text-white/60 text-sm mt-2">Loading...</p>
+          </CardContent>
+        </Card>
+      </div>
+    }>
+      <PurchaseSuccessContent />
+    </Suspense>
   )
 }
