@@ -24,6 +24,9 @@ export function PurchaseCreditsModal({ isOpen, onClose, userId }: PurchaseCredit
     setSelectedPackage(pkg)
 
     try {
+      console.log('Starting purchase for package:', pkg.id)
+      console.log('User ID:', userId)
+      
       const response = await fetch('/api/stripe/checkout', {
         method: 'POST',
         headers: {
@@ -35,21 +38,28 @@ export function PurchaseCreditsModal({ isOpen, onClose, userId }: PurchaseCredit
         }),
       })
 
+      console.log('Checkout API response status:', response.status)
+      
       const data = await response.json()
+      console.log('Checkout API response data:', data)
 
       if (!response.ok) {
-        throw new Error(data.error || 'Failed to create checkout session')
+        const errorMsg = data.error || `Server error: ${response.status}`
+        console.error('Checkout API error:', errorMsg)
+        throw new Error(errorMsg)
       }
 
       if (data.url) {
+        console.log('Redirecting to Stripe checkout:', data.url)
         // Redirect to Stripe checkout
         window.location.href = data.url
       } else {
-        throw new Error('No checkout URL received')
+        throw new Error('No checkout URL received from server')
       }
     } catch (err) {
       console.error('Purchase error:', err)
-      setError(err instanceof Error ? err.message : 'Failed to start checkout')
+      const errorMessage = err instanceof Error ? err.message : 'Failed to start checkout. Please try again.'
+      setError(`Error: ${errorMessage}`)
       setIsProcessing(false)
       setSelectedPackage(null)
     }
