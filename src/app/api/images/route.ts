@@ -233,12 +233,12 @@ export async function POST(request: NextRequest) {
         }
 
         let result: OpenAI.Images.ImagesResponse;
-        const model = 'gpt-image-1';
+        const model = 'gpt-image-1.5';
 
         if (mode === 'generate') {
             const n = parseInt((formData.get('n') as string) || '1', 10);
             const size = (formData.get('size') as OpenAI.Images.ImageGenerateParams['size']) || '1024x1024';
-            const quality = (formData.get('quality') as OpenAI.Images.ImageGenerateParams['quality']) || 'high';
+            const quality = (formData.get('quality') as OpenAI.Images.ImageGenerateParams['quality']) || 'medium';
             const output_format =
                 (formData.get('output_format') as OpenAI.Images.ImageGenerateParams['output_format']) || 'png';
             const output_compression_str = formData.get('output_compression') as string | null;
@@ -277,7 +277,7 @@ export async function POST(request: NextRequest) {
             
             let actualPrompt = prompt;
             let actualSize: string | undefined = 'auto';
-            let actualQuality: OpenAI.Images.ImageEditParams['quality'] = 'high'; // Force high quality for coloring pages
+            let actualQuality: OpenAI.Images.ImageEditParams['quality'] = 'medium'; // Use medium quality for coloring pages
             let n = 1; // Always generate 1 image for coloring pages
 
             if (coloringPageType) {
