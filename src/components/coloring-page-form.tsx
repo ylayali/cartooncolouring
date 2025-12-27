@@ -19,7 +19,7 @@ import {
 } from 'lucide-react';
 import Image from 'next/image';
 import * as React from 'react';
-import { ColoringPageFormData, ColoringPageType, BackgroundType, OrientationType } from '@/types/coloring-page';
+import { ColoringPageFormData, ColoringPageType, BackgroundType, OrientationType, SetPieceType } from '@/types/coloring-page';
 import { WebcamCapture } from '@/components/webcam-capture';
 
 export type { ColoringPageFormData };
@@ -63,7 +63,7 @@ export function ColoringPageForm({
     clientPasswordHash,
     onOpenPasswordDialogAction
 }: ColoringPageFormProps) {
-    const [type, setType] = React.useState<ColoringPageType>('straight-copy');
+    const [type, setType] = React.useState<ColoringPageType>('cartoon-portrait');
     const [imageFiles, setImageFiles] = React.useState<File[]>([]);
     const [imagePreviewUrls, setImagePreviewUrls] = React.useState<string[]>([]);
     const [background, setBackground] = React.useState<BackgroundType>('plain');
@@ -71,6 +71,7 @@ export function ColoringPageForm({
     const [nameOrMessage, setNameOrMessage] = React.useState('');
     const [individualNames, setIndividualNames] = React.useState<string[]>(['']);
     const [sceneDescription, setSceneDescription] = React.useState('');
+    const [setPiece, setSetPiece] = React.useState<SetPieceType>('none');
     const [isWebcamOpen, setIsWebcamOpen] = React.useState(false);
 
     // Determine max images based on type
@@ -258,7 +259,8 @@ export function ColoringPageForm({
             orientation,
             nameOrMessage,
             individualNames: type === 'straight-copy' ? [] : individualNames,
-            sceneDescription: background === 'scene' ? sceneDescription : undefined
+            sceneDescription: background === 'scene' ? sceneDescription : undefined,
+            setPiece: type === 'cartoon-portrait' ? setPiece : undefined
         };
 
         onSubmitAction(formData);
@@ -532,6 +534,59 @@ export function ColoringPageForm({
                             </div>
                         </RadioGroup>
                     </div>
+
+                    {/* Set Pieces (only for cartoon-portrait type) */}
+                    {type === 'cartoon-portrait' && (
+                        <div className='space-y-3'>
+                            <Label className='block text-white'>Extra Set Piece (Optional)</Label>
+                            <RadioGroup
+                                value={setPiece}
+                                onValueChange={(value) => setSetPiece(value as SetPieceType)}
+                                disabled={isLoading}
+                                className='space-y-2'>
+                                <div className='flex items-center space-x-2'>
+                                    <RadioGroupItem
+                                        value='none'
+                                        id='setpiece-none'
+                                        className='border-white/40 text-white data-[state=checked]:border-white data-[state=checked]:text-white'
+                                    />
+                                    <Label htmlFor='setpiece-none' className='cursor-pointer text-base text-white/80'>
+                                        None
+                                    </Label>
+                                </div>
+                                <div className='flex items-center space-x-2'>
+                                    <RadioGroupItem
+                                        value='unicorn'
+                                        id='setpiece-unicorn'
+                                        className='border-white/40 text-white data-[state=checked]:border-white data-[state=checked]:text-white'
+                                    />
+                                    <Label htmlFor='setpiece-unicorn' className='cursor-pointer text-base text-white/80'>
+                                        Unicorn (flying through a tear in the page)
+                                    </Label>
+                                </div>
+                                <div className='flex items-center space-x-2'>
+                                    <RadioGroupItem
+                                        value='tiny'
+                                        id='setpiece-tiny'
+                                        className='border-white/40 text-white data-[state=checked]:border-white data-[state=checked]:text-white'
+                                    />
+                                    <Label htmlFor='setpiece-tiny' className='cursor-pointer text-base text-white/80'>
+                                        Tiny Versions (climbing things in the background)
+                                    </Label>
+                                </div>
+                                <div className='flex items-center space-x-2'>
+                                    <RadioGroupItem
+                                        value='corner-peel'
+                                        id='setpiece-corner-peel'
+                                        className='border-white/40 text-white data-[state=checked]:border-white data-[state=checked]:text-white'
+                                    />
+                                    <Label htmlFor='setpiece-corner-peel' className='cursor-pointer text-base text-white/80'>
+                                        Corner Peel (figure peeling back page corner)
+                                    </Label>
+                                </div>
+                            </RadioGroup>
+                        </div>
+                    )}
                 </CardContent>
 
                 <CardFooter className='border-t border-white/10 p-4'>

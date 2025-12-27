@@ -267,8 +267,8 @@ export default function HomePage() {
             return;
         }
 
-        // Calculate credits required based on number of photos
-        const creditsRequired = formData.imageFiles.length > 1 ? 2 : 1;
+        // Flat rate: 1 credit per coloring page regardless of number of photos
+        const creditsRequired = 1;
         
         // Check user's current credits from Appwrite
         const databases = getDatabases();
@@ -285,7 +285,7 @@ export default function HomePage() {
             }
 
             if (profile.credits < creditsRequired) {
-                setError(`Insufficient credits! You need ${creditsRequired} credit${creditsRequired > 1 ? 's' : ''} but only have ${profile.credits}. Single photo generations cost 1 credit, multiple photos cost 2 credits.`);
+                setError(`Insufficient credits! You need ${creditsRequired} credit but only have ${profile.credits}. Each coloring page costs 1 credit.`);
                 return;
             }
         } catch (error) {
@@ -328,6 +328,11 @@ export default function HomePage() {
         // Add individual names as JSON
         if (formData.individualNames.length > 0) {
             apiFormData.append('individualNames', JSON.stringify(formData.individualNames));
+        }
+
+        // Add set piece if present
+        if (formData.setPiece && formData.setPiece !== 'none') {
+            apiFormData.append('setPiece', formData.setPiece);
         }
 
         // Add images
@@ -373,7 +378,7 @@ export default function HomePage() {
 
                     if (!currentProfile) {
                         console.error('Error fetching current credits for deduction');
-                        setError(`Generation successful but failed to deduct ${creditsRequired} credit${creditsRequired > 1 ? 's' : ''}. Please contact support.`);
+                        setError('Generation successful but failed to deduct 1 credit. Please contact support.');
                     } else {
                         // Calculate new credit amount
                         const newCredits = currentProfile.credits - creditsRequired;
@@ -388,16 +393,16 @@ export default function HomePage() {
                                     credits: newCredits
                                 }
                             );
-                            console.log(`Successfully deducted ${creditsRequired} credit${creditsRequired > 1 ? 's' : ''} (${currentProfile.credits} → ${newCredits})`);
+                            console.log(`Successfully deducted 1 credit (${currentProfile.credits} → ${newCredits})`);
                         } catch (deductError) {
                             console.error('Error deducting credits:', deductError);
                             // Don't fail the generation, just log the error
-                            setError(`Generation successful but failed to deduct ${creditsRequired} credit${creditsRequired > 1 ? 's' : ''}. Please contact support.`);
+                            setError('Generation successful but failed to deduct 1 credit. Please contact support.');
                         }
                     }
                 } catch (creditError) {
                     console.error('Credit deduction error:', creditError);
-                    setError(`Generation successful but failed to deduct ${creditsRequired} credit${creditsRequired > 1 ? 's' : ''}. Please contact support.`);
+                    setError('Generation successful but failed to deduct 1 credit. Please contact support.');
                 }
 
                 const batchTimestamp = Date.now();
