@@ -99,7 +99,7 @@ export function UserProfile() {
     <>
       <PurchaseCreditsModal
         isOpen={isPurchaseModalOpen}
-        onClose={() => {
+        onCloseAction={() => {
           setIsPurchaseModalOpen(false)
           refreshCredits() // Refresh credits when modal closes
         }}

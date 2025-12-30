@@ -4,7 +4,7 @@ export type BackgroundType = 'plain' | 'mindful-pattern' | 'scene';
 
 export type OrientationType = 'portrait' | 'landscape';
 
-export type SetPieceType = 'none' | 'unicorn' | 'tiny' | 'corner-peel';
+export type SetPieceType = 'none' | 'bursting-in' | 'tiny' | 'corner-peel';
 
 export interface ColoringPageFormData {
     type: ColoringPageType;
@@ -14,7 +14,8 @@ export interface ColoringPageFormData {
     nameOrMessage: string; // Main name/message field
     individualNames: string[]; // For facial portrait names or cartoon activities
     sceneDescription?: string; // Only used when background is 'scene'
-    setPiece?: SetPieceType; // Only used for cartoon-portrait type
+    setPiece: SetPieceType; // Available for all coloring page types
+    burstingInText?: string; // Custom text for bursting-in set piece
 }
 
 export interface ColoringPageApiData {

@@ -32,12 +32,13 @@ function sha256(data: string): string {
 }
 
 // Helper function to get set piece prompt additions
-function getSetPieceAddition(setPiece?: string): string {
+function getSetPieceAddition(setPiece?: string, burstingInText?: string): string {
     if (!setPiece || setPiece === 'none') return '';
     
     switch (setPiece) {
-        case 'unicorn':
-            return '. additionally, a unicorn has flown into the page through a small tear in the paper and is flying around, matching the overall style of the picture';
+        case 'bursting-in':
+            const creature = burstingInText?.trim() || 'a unicorn';
+            return `. additionally, ${creature} has flown into the page through a small tear in the paper and is flying around, matching the overall style of the picture`;
         case 'tiny':
             return '. additionally, tiny versions of the children are climbing things in the background, matching the overall style of the picture';
         case 'corner-peel':
@@ -55,18 +56,19 @@ function generateColoringPagePrompt(
     individualNames: string[],
     background: string,
     sceneDescription?: string,
-    setPiece?: string
+    setPiece?: string,
+    burstingInText?: string
 ): string {
     const hasName = nameOrMessage.trim().length > 0;
     const hasActivity = individualNames.length > 0 && individualNames[0]?.trim().length > 0;
-    const setPieceAddition = type === 'cartoon-portrait' ? getSetPieceAddition(setPiece) : '';
+    const setPieceAddition = getSetPieceAddition(setPiece, burstingInText);
 
     switch (type) {
         case 'straight-copy':
             if (!hasName) {
-                return 'turn the attached photo into a line drawing suitable for a coloring page, ensuring accurate facial features are maintained. place the result, as large as possible whilst still looking elegant, centered vertically and horizontally on a plain white background';
+                return `turn the attached photo into a line drawing suitable for a coloring page, ensuring accurate facial features are maintained. place the result, as large as possible whilst still looking elegant, centered vertically and horizontally on a plain white background${setPieceAddition}`;
             } else {
-                return `turn the attached photo into a line drawing suitable for a coloring page, ensuring accurate facial features are maintained. write ${nameOrMessage} in friendly white letters with black outline, suited to a coloring page. place the writing unobtrusively on top of the line drawing, ensuring it doesn't obscure the subject's face. finally center the whole thing, as large as possible whilst still looking elegant, on a plain white background.`;
+                return `turn the attached photo into a line drawing suitable for a coloring page, ensuring accurate facial features are maintained. write ${nameOrMessage} in friendly white letters with black outline, suited to a coloring page. place the writing unobtrusively on top of the line drawing, ensuring it doesn't obscure the subject's face. finally center the whole thing, as large as possible whilst still looking elegant, on a plain white background${setPieceAddition}`;
             }
 
         case 'facial-portrait':
@@ -89,29 +91,29 @@ function generateColoringPagePrompt(
             if (background === 'plain') {
                 if (!hasName) {
                     if (isMultiplePhotos) {
-                        return `turn the faces from the attached ${numPhotos} photos into line drawings suitable for a coloring page, ensuring accurate facial features are maintained. place each result inside its own plain white box with a black outline.${namesDesc} arrange all boxes elegantly on a plain white background`;
+                        return `turn the faces from the attached ${numPhotos} photos into line drawings suitable for a coloring page, ensuring accurate facial features are maintained. place each result inside its own plain white box with a black outline.${namesDesc} arrange all boxes elegantly on a plain white background${setPieceAddition}`;
                     } else {
-                        return 'turn the face from the attached photo into a line drawing suitable for a coloring page, ensuring accurate facial features are maintained. place the result, as large as possible whilst still looking elegant, inside a plain white box with a black outline. center this horizontally and vertically on a plain white background';
+                        return `turn the face from the attached photo into a line drawing suitable for a coloring page, ensuring accurate facial features are maintained. place the result, as large as possible whilst still looking elegant, inside a plain white box with a black outline. center this horizontally and vertically on a plain white background${setPieceAddition}`;
                     }
                 } else {
                     if (isMultiplePhotos) {
-                        return `turn the faces from the attached ${numPhotos} photos into line drawings suitable for a coloring page, ensuring accurate facial features are maintained. place each result inside its own plain white box with a black outline.${namesDesc} arrange all boxes elegantly and write ${nameOrMessage} in friendly white letters with black outline somewhere unobtrusive on a plain white background`;
+                        return `turn the faces from the attached ${numPhotos} photos into line drawings suitable for a coloring page, ensuring accurate facial features are maintained. place each result inside its own plain white box with a black outline.${namesDesc} arrange all boxes elegantly and write ${nameOrMessage} in friendly white letters with black outline somewhere unobtrusive on a plain white background${setPieceAddition}`;
                     } else {
-                        return `turn the face from the attached photo into a line drawing suitable for a coloring page, ensuring accurate facial features are maintained. place the result, as large as possible whilst still looking elegant, inside a plain white box with a black outline. below this box write ${nameOrMessage} in friendly white letters with black outline, suited to a coloring page. center this collection of objects horizontally and vertically on a plain white background`;
+                        return `turn the face from the attached photo into a line drawing suitable for a coloring page, ensuring accurate facial features are maintained. place the result, as large as possible whilst still looking elegant, inside a plain white box with a black outline. below this box write ${nameOrMessage} in friendly white letters with black outline, suited to a coloring page. center this collection of objects horizontally and vertically on a plain white background${setPieceAddition}`;
                     }
                 }
             } else if (background === 'mindful-pattern') {
                 if (!hasName) {
                     if (isMultiplePhotos) {
-                        return `turn the faces from the attached ${numPhotos} photos into line drawings suitable for a coloring page, ensuring accurate facial features are maintained. place each result inside its own plain white box with a black outline.${namesDesc} arrange all boxes elegantly on top of an abstract pattern suitable for mindful coloring`;
+                        return `turn the faces from the attached ${numPhotos} photos into line drawings suitable for a coloring page, ensuring accurate facial features are maintained. place each result inside its own plain white box with a black outline.${namesDesc} arrange all boxes elegantly on top of an abstract pattern suitable for mindful coloring${setPieceAddition}`;
                     } else {
-                        return 'turn the face from the attached photo into a line drawing suitable for a coloring page, ensuring accurate facial features are maintained. place the result, as large as possible whilst still looking elegant, inside a plain white box with a black outline. center this collection of objects horizontally and vertically on top of an abstract pattern suitable for mindful coloring';
+                        return `turn the face from the attached photo into a line drawing suitable for a coloring page, ensuring accurate facial features are maintained. place the result, as large as possible whilst still looking elegant, inside a plain white box with a black outline. center this collection of objects horizontally and vertically on top of an abstract pattern suitable for mindful coloring${setPieceAddition}`;
                     }
                 } else {
                     if (isMultiplePhotos) {
-                        return `turn the faces from the attached ${numPhotos} photos into line drawings suitable for a coloring page, ensuring accurate facial features are maintained. place each result inside its own plain white box with a black outline.${namesDesc} arrange all boxes elegantly and write ${nameOrMessage} in friendly white letters with black outline somewhere unobtrusive on top of an abstract pattern suitable for mindful coloring`;
+                        return `turn the faces from the attached ${numPhotos} photos into line drawings suitable for a coloring page, ensuring accurate facial features are maintained. place each result inside its own plain white box with a black outline.${namesDesc} arrange all boxes elegantly and write ${nameOrMessage} in friendly white letters with black outline somewhere unobtrusive on top of an abstract pattern suitable for mindful coloring${setPieceAddition}`;
                     } else {
-                        return `turn the face from the attached photo into a line drawing suitable for a coloring page, ensuring accurate facial features are maintained. place the result, as large as possible whilst still looking elegant, inside a plain white box with a black outline. below this box write ${nameOrMessage} in friendly white letters with black outline, suited to a coloring page. center this collection of objects horizontally and vertically on top of an abstract pattern suitable for mindful coloring`;
+                        return `turn the face from the attached photo into a line drawing suitable for a coloring page, ensuring accurate facial features are maintained. place the result, as large as possible whilst still looking elegant, inside a plain white box with a black outline. below this box write ${nameOrMessage} in friendly white letters with black outline, suited to a coloring page. center this collection of objects horizontally and vertically on top of an abstract pattern suitable for mindful coloring${setPieceAddition}`;
                     }
                 }
             }
@@ -302,6 +304,7 @@ export async function POST(request: NextRequest) {
                 // This is a coloring page request - handle specially
                 const individualNamesJson = formData.get('individualNames') as string | null;
                 const setPiece = formData.get('setPiece') as string | null;
+                const burstingInText = formData.get('burstingInText') as string | null;
                 let individualNames: string[] = [];
                 
                 if (individualNamesJson) {
@@ -320,7 +323,8 @@ export async function POST(request: NextRequest) {
                     individualNames,
                     background || 'plain',
                     sceneDescription || undefined,
-                    setPiece || undefined
+                    setPiece || undefined,
+                    burstingInText || undefined
                 );
 
                 // Set size based on orientation

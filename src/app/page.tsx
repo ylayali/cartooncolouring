@@ -333,6 +333,11 @@ export default function HomePage() {
         // Add set piece if present
         if (formData.setPiece && formData.setPiece !== 'none') {
             apiFormData.append('setPiece', formData.setPiece);
+            
+            // Add bursting-in custom text if provided
+            if (formData.setPiece === 'bursting-in' && formData.burstingInText) {
+                apiFormData.append('burstingInText', formData.burstingInText);
+            }
         }
 
         // Add images

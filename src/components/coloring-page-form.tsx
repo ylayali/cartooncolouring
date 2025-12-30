@@ -72,6 +72,7 @@ export function ColoringPageForm({
     const [individualNames, setIndividualNames] = React.useState<string[]>(['']);
     const [sceneDescription, setSceneDescription] = React.useState('');
     const [setPiece, setSetPiece] = React.useState<SetPieceType>('none');
+    const [burstingInText, setBurstingInText] = React.useState('');
     const [isWebcamOpen, setIsWebcamOpen] = React.useState(false);
 
     // Determine max images based on type
@@ -260,7 +261,8 @@ export function ColoringPageForm({
             nameOrMessage,
             individualNames: type === 'straight-copy' ? [] : individualNames,
             sceneDescription: background === 'scene' ? sceneDescription : undefined,
-            setPiece: type === 'cartoon-portrait' ? setPiece : undefined
+            setPiece: setPiece,
+            burstingInText: setPiece === 'bursting-in' && burstingInText.trim() ? burstingInText : undefined
         };
 
         onSubmitAction(formData);
@@ -535,58 +537,74 @@ export function ColoringPageForm({
                         </RadioGroup>
                     </div>
 
-                    {/* Set Pieces (only for cartoon-portrait type) */}
-                    {type === 'cartoon-portrait' && (
-                        <div className='space-y-3'>
-                            <Label className='block text-white'>Extra Set Piece (Optional)</Label>
-                            <RadioGroup
-                                value={setPiece}
-                                onValueChange={(value) => setSetPiece(value as SetPieceType)}
-                                disabled={isLoading}
-                                className='space-y-2'>
-                                <div className='flex items-center space-x-2'>
-                                    <RadioGroupItem
-                                        value='none'
-                                        id='setpiece-none'
-                                        className='border-white/40 text-white data-[state=checked]:border-white data-[state=checked]:text-white'
-                                    />
-                                    <Label htmlFor='setpiece-none' className='cursor-pointer text-base text-white/80'>
-                                        None
-                                    </Label>
-                                </div>
-                                <div className='flex items-center space-x-2'>
-                                    <RadioGroupItem
-                                        value='unicorn'
-                                        id='setpiece-unicorn'
-                                        className='border-white/40 text-white data-[state=checked]:border-white data-[state=checked]:text-white'
-                                    />
-                                    <Label htmlFor='setpiece-unicorn' className='cursor-pointer text-base text-white/80'>
-                                        Unicorn (flying through a tear in the page)
-                                    </Label>
-                                </div>
-                                <div className='flex items-center space-x-2'>
-                                    <RadioGroupItem
-                                        value='tiny'
-                                        id='setpiece-tiny'
-                                        className='border-white/40 text-white data-[state=checked]:border-white data-[state=checked]:text-white'
-                                    />
-                                    <Label htmlFor='setpiece-tiny' className='cursor-pointer text-base text-white/80'>
-                                        Tiny Versions (climbing things in the background)
-                                    </Label>
-                                </div>
-                                <div className='flex items-center space-x-2'>
-                                    <RadioGroupItem
-                                        value='corner-peel'
-                                        id='setpiece-corner-peel'
-                                        className='border-white/40 text-white data-[state=checked]:border-white data-[state=checked]:text-white'
-                                    />
-                                    <Label htmlFor='setpiece-corner-peel' className='cursor-pointer text-base text-white/80'>
-                                        Corner Peel (figure peeling back page corner)
-                                    </Label>
-                                </div>
-                            </RadioGroup>
-                        </div>
-                    )}
+                    {/* Set Pieces (available for all types) */}
+                    <div className='space-y-3'>
+                        <Label className='block text-white'>Extra Set Piece (Optional)</Label>
+                        <RadioGroup
+                            value={setPiece}
+                            onValueChange={(value) => setSetPiece(value as SetPieceType)}
+                            disabled={isLoading}
+                            className='space-y-2'>
+                            <div className='flex items-center space-x-2'>
+                                <RadioGroupItem
+                                    value='none'
+                                    id='setpiece-none'
+                                    className='border-white/40 text-white data-[state=checked]:border-white data-[state=checked]:text-white'
+                                />
+                                <Label htmlFor='setpiece-none' className='cursor-pointer text-base text-white/80'>
+                                    None
+                                </Label>
+                            </div>
+                            <div className='flex items-center space-x-2'>
+                                <RadioGroupItem
+                                    value='bursting-in'
+                                    id='setpiece-bursting-in'
+                                    className='border-white/40 text-white data-[state=checked]:border-white data-[state=checked]:text-white'
+                                />
+                                <Label htmlFor='setpiece-bursting-in' className='cursor-pointer text-base text-white/80'>
+                                    Bursting In (something bursting through the paper)
+                                </Label>
+                            </div>
+                            <div className='flex items-center space-x-2'>
+                                <RadioGroupItem
+                                    value='tiny'
+                                    id='setpiece-tiny'
+                                    className='border-white/40 text-white data-[state=checked]:border-white data-[state=checked]:text-white'
+                                />
+                                <Label htmlFor='setpiece-tiny' className='cursor-pointer text-base text-white/80'>
+                                    Tiny Versions (climbing things in the background)
+                                </Label>
+                            </div>
+                            <div className='flex items-center space-x-2'>
+                                <RadioGroupItem
+                                    value='corner-peel'
+                                    id='setpiece-corner-peel'
+                                    className='border-white/40 text-white data-[state=checked]:border-white data-[state=checked]:text-white'
+                                />
+                                <Label htmlFor='setpiece-corner-peel' className='cursor-pointer text-base text-white/80'>
+                                    Corner Peel (figure peeling back page corner)
+                                </Label>
+                            </div>
+                        </RadioGroup>
+
+                        {/* Bursting In Text Input (only shown when bursting-in is selected) */}
+                        {setPiece === 'bursting-in' && (
+                            <div className='space-y-1.5 pt-2'>
+                                <Label htmlFor='bursting-in-text' className='text-white'>
+                                    What is bursting through?
+                                </Label>
+                                <Input
+                                    id='bursting-in-text'
+                                    type='text'
+                                    placeholder='e.g., unicorn, dragon, superhero'
+                                    value={burstingInText}
+                                    onChange={(e) => setBurstingInText(e.target.value)}
+                                    disabled={isLoading}
+                                    className='rounded-md border border-white/20 bg-black text-white placeholder:text-white/40 focus:border-white/50 focus:ring-white/50'
+                                />
+                            </div>
+                        )}
+                    </div>
                 </CardContent>
 
                 <CardFooter className='border-t border-white/10 p-4'>
